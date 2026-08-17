@@ -1,0 +1,243 @@
+import { StyleSheet } from 'react-native';
+import { ThemeColors } from '../theme/types';
+
+export const createStyles = (theme: ThemeColors) => StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+    scrollView: {
+        flex: 1,
+    },
+    contentContainer: {
+        padding: 20,
+        paddingBottom: 40,
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    backButton: {
+        padding: 8,
+        marginRight: 12,
+        borderRadius: 12,
+        backgroundColor: theme.surface,
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: theme.text,
+    },
+    warningBanner: {
+        flexDirection: 'row',
+        backgroundColor: '#FFEBEE', // Light red
+        padding: 16,
+        borderRadius: 12,
+        marginBottom: 24,
+        alignItems: 'flex-start',
+        borderWidth: 1,
+        borderColor: '#FFCDD2',
+    },
+    warningIcon: {
+        marginRight: 12,
+        marginTop: 2,
+    },
+    warningTextContainer: {
+        flex: 1,
+    },
+    warningTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#D32F2F', // Dark red
+        marginBottom: 4,
+    },
+    warningText: {
+        fontSize: 14,
+        color: '#B71C1C',
+    },
+    card: {
+        backgroundColor: theme.surface,
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 24,
+        shadowColor: theme.shadow,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+        borderWidth: 1,
+        borderColor: theme.border,
+    },
+    clientRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    avatar: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: theme.borderLight,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 12,
+    },
+    clientInfo: {
+        flex: 1,
+    },
+    clientName: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: theme.text,
+    },
+    agencyName: {
+        fontSize: 14,
+        color: theme.textSecondary,
+    },
+    timeRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingTop: 12,
+        borderTopWidth: 1,
+        borderTopColor: theme.border,
+    },
+    timeText: {
+        fontSize: 14,
+        color: theme.text,
+        marginLeft: 8,
+    },
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: theme.text,
+        marginBottom: 8,
+    },
+    optionalText: {
+        fontSize: 14,
+        fontWeight: 'normal',
+        color: theme.textSecondary,
+    },
+    requiredBadge: {
+        backgroundColor: '#D32F2F',
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        borderRadius: 4,
+        marginLeft: 8,
+    },
+    requiredText: {
+        color: '#fff',
+        fontSize: 10,
+        fontWeight: 'bold',
+    },
+    inputGroup: {
+        marginBottom: 20,
+    },
+    labelRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    input: {
+        backgroundColor: theme.surface,
+        borderWidth: 1,
+        borderColor: theme.border,
+        borderRadius: 12,
+        padding: 12,
+        fontSize: 16,
+        color: theme.text,
+    },
+    textArea: {
+        height: 120,
+        textAlignVertical: 'top',
+    },
+    imageSection: {
+        marginBottom: 24,
+    },
+    imageUploadButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: theme.surface,
+        borderWidth: 1,
+        borderColor: theme.primary,
+        borderStyle: 'dashed',
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 12,
+    },
+    imageUploadText: {
+        color: theme.primary,
+        fontWeight: '600',
+        marginLeft: 8,
+    },
+    imagesContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 12,
+    },
+    imageWrapper: {
+        width: 100,
+        height: 100,
+        borderRadius: 12,
+        overflow: 'hidden',
+        position: 'relative',
+    },
+    fetchedImageWrapper: {
+        width: '100%',
+        height: 300,
+        borderRadius: 12,
+        overflow: 'hidden',
+        marginBottom: 12,
+        backgroundColor: '#f0f0f0',
+        borderWidth: 1,
+        borderColor: theme.border,
+    },
+    thumbnail: {
+        width: '100%',
+        height: '100%',
+    },
+    removeImageButton: {
+        position: 'absolute',
+        top: 4,
+        right: 4,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        borderRadius: 12,
+        padding: 4,
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        padding: 16,
+        gap: 12,
+    },
+    cancelButton: {
+        flex: 1,
+        paddingVertical: 16,
+        borderRadius: 12,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: theme.border,
+        backgroundColor: theme.surface,
+    },
+    cancelButtonText: {
+        color: theme.text,
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    submitButton: {
+        flex: 1,
+        backgroundColor: theme.primary,
+        paddingVertical: 16,
+        borderRadius: 12,
+        alignItems: 'center',
+        shadowColor: theme.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+    submitButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+});
