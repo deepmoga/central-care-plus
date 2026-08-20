@@ -2,7 +2,7 @@
   "expo": {
     "name": "Central Care",
     "slug": "ExpoAuthApp",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/appIcon.png",
     "userInterfaceStyle": "automatic",
@@ -54,13 +54,14 @@
         }
       ],
       "expo-notifications",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "expo-font"
     ],
     "extra": {
       "eas": {
         "projectId": "1bcf4e02-9907-4887-bdaa-eb4007640cbd"
       }
     },
-    "owner": "prince46"
+    "owner": "gaganmoga-2"
   }
 }
