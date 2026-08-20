@@ -6,7 +6,7 @@ import { useTheme } from '../context/ThemeContext';
 import { createStyles } from '../styles/JobDetailStyles';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { getJobById, jobStatus, checkOutJob, checkActiveJobStatus } from '../api/jobs.service';
+import { getJobById, jobStatus, checkOutJob, checkActiveJobStatus, getServiceCuresAlerts } from '../api/jobs.service';
 import { JobDetail } from '../models/job.model';
 import CheckOutModal from '../components/CheckOutModal';
 import CustomModal from '../components/CustomModal';
@@ -33,6 +33,7 @@ const JobDetailScreen = () => {
 
     const [job, setJob] = useState<JobDetail | null>(null);
     const [loading, setLoading] = useState(false);
+    const [isLookListenSubmitted, setIsLookListenSubmitted] = useState(false);
     const [scrollEnabled, setScrollEnabled] = useState(true);
 
     const isJobExpired = (() => {
@@ -122,6 +123,13 @@ const JobDetailScreen = () => {
 
                     // Always update signature from API
                     setSignature(response.data.signature);
+                }
+
+                if (role !== 'client') {
+                    const alertsResponse = await getServiceCuresAlerts(jobId, jobTable);
+                    if (alertsResponse?.success && alertsResponse.data && alertsResponse.data.length > 0) {
+                        setIsLookListenSubmitted(true);
+                    }
                 }
             }
         } catch (error) {
@@ -410,7 +418,12 @@ const JobDetailScreen = () => {
     return (
         <LinearGradient colors={theme.backgroundGradient as [string, string, ...string[]]} style={{ flex: 1 }}>
             <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]} edges={['top']}>
-                <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false} scrollEnabled={scrollEnabled}>
+                <ScrollView 
+                    style={styles.scrollView} 
+                    showsVerticalScrollIndicator={false} 
+                    scrollEnabled={scrollEnabled}
+                    keyboardDismissMode="on-drag"
+                >
                     {/* Header with Status */}
                     <View style={styles.header}>
                         {/* User Details Section */}
@@ -601,23 +614,14 @@ const JobDetailScreen = () => {
                     {/* Kms and Comment Section - Carer Only */}
                     {(isCheckedIn || isJobCompleted) && role !== 'client' && (
                         <>
-                            <View style={styles.privateKmsSection}>
-                                <View style={[styles.inputGroup, { flex: 1 }]}>
-                                    <Text style={styles.inputLabel}>Private Kms</Text>
-                                    <TextInput
-                                        style={[styles.input, isJobCompleted && { opacity: 0.6, backgroundColor: theme.border }]}
-                                        keyboardType="numeric"
-                                        placeholder="0"
-                                        placeholderTextColor={theme.textTertiary}
-                                        value={isJobCompleted ? (job.private_kms?.toString() || '') : privateKms}
-                                        onChangeText={(text) => setJobDetails(jobId, { privateKms: text })}
-                                        editable={!isJobCompleted}
-                                        maxLength={3}
-                                    />
-                                </View>
-
-                                <View style={[styles.inputGroup, { flex: 1 }]}>
-                                    <Text style={styles.inputLabel}>Outing Kms</Text>
+                            <View style={styles.section}>
+                                <View style={styles.jobMeta}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: theme.text }}>Outing Kms</Text>
+                                    </View>
+                                    <Text style={{ color: theme.textSecondary, fontSize: 13, lineHeight: 18, marginBottom: 12 }}>
+                                        Total KMs driven during this outing. Record the distance travelled while transporting to and from their appointments.
+                                    </Text>
                                     <TextInput
                                         style={[styles.input, isJobCompleted && { opacity: 0.6, backgroundColor: theme.border }]}
                                         keyboardType="numeric"
@@ -725,7 +729,7 @@ const JobDetailScreen = () => {
                                                     onPress={() => navigation.navigate('Signature', { jobId: job?.id, jobTable: job?.table })}
                                                 >
                                                     <Text style={{ color: (isSigned || isExpired) ? theme.textSecondary : theme.primary, fontWeight: '600', fontSize: 13 }}>
-                                                        {isSigned ? 'Captured' : isExpired ? 'Signature Expired' : 'Capture Signature'}
+                                                        {isSigned ? 'Captured' : isExpired ? 'Signature Expired' : role === 'client' ? 'Sign Here' : 'Capture Signature'}
                                                     </Text>
                                                 </TouchableOpacity>
                                             );
@@ -759,7 +763,7 @@ const JobDetailScreen = () => {
                             })}
                         >
                             <Ionicons name="document-text-outline" size={18} color={theme.primary} style={{ marginRight: 6 }} />
-                            <Text style={{ color: theme.text, fontWeight: '600', fontSize: 13 }}>Add/View Notes</Text>
+                            <Text style={{ color: theme.text, fontWeight: '600', fontSize: 13 }}>{role === 'client' ? 'Add/Edit Comment' : 'Add/Edit Notes'}</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -794,12 +798,21 @@ const JobDetailScreen = () => {
                     )}
 
                     {/* Look/Listen Tool Card */}
-                    <View style={styles.section}>
-                        <View style={styles.jobMeta}>
-                            <Text style={{ fontSize: 16, fontWeight: 'bold', color: theme.text, marginBottom: 8 }}>Look & Listen Tool</Text>
-                            <Text style={{ color: theme.textSecondary, fontSize: 13, lineHeight: 18, marginBottom: 12 }}>
-                                If you have identified a change while caring for or observing a client, please tick the change, add any additional information where indicated.
-                            </Text>
+                    {role !== 'client' && (
+                        <View style={styles.section}>
+                            <View style={styles.jobMeta}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                                    <Text style={{ fontSize: 16, fontWeight: 'bold', color: theme.text }}>Look & Listen Tool</Text>
+                                    {isLookListenSubmitted && (
+                                        <View style={{ backgroundColor: theme.success + '20', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, flexDirection: 'row', alignItems: 'center' }}>
+                                            <Ionicons name="checkmark-circle" size={12} color={theme.success} style={{ marginRight: 4 }} />
+                                            <Text style={{ color: theme.success, fontWeight: '700', fontSize: 10, textTransform: 'uppercase' }}>Submitted</Text>
+                                        </View>
+                                    )}
+                                </View>
+                                <Text style={{ color: theme.textSecondary, fontSize: 13, lineHeight: 18, marginBottom: 12 }}>
+                                    If you have identified a change while caring for or observing a client, please tick the change, add any additional information where indicated.
+                                </Text>
                             <TouchableOpacity
                                 style={{
                                     flexDirection: 'row',
@@ -824,7 +837,7 @@ const JobDetailScreen = () => {
                             </TouchableOpacity>
                         </View>
                     </View>
-
+                    )}
 
                     {/* Temporary Log Emergency Button */}
                     {role !== 'client' && (

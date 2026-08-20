@@ -88,10 +88,10 @@ const CheckOutModal: React.FC<CheckOutModalProps> = ({ visible, onClose, onConfi
                         </TouchableOpacity>
 
                         <View style={styles.summarySection}>
-                            <View style={styles.summaryRow}>
+                            {/* <View style={styles.summaryRow}>
                                 <Text style={styles.label}>Private Kms:</Text>
                                 <Text style={styles.value}>{privateKms || '0'}</Text>
-                            </View>
+                            </View> */}
                             <View style={styles.summaryRow}>
                                 <Text style={styles.label}>Outing Kms:</Text>
                                 <Text style={styles.value}>{outingKms || '0'}</Text>

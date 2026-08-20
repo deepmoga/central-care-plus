@@ -78,10 +78,10 @@ const JobNotesScreen = () => {
             if (response.success) {
                 setNewNote('');
                 fetchNotes();
-                Toast.show({ type: 'success', text1: 'Note added successfully' });
+                Toast.show({ type: 'success', text1: role === 'client' ? 'Comment added successfully' : 'Note added successfully' });
             }
         } catch {
-            Alert.alert('Error', 'Failed to add note');
+            Alert.alert('Error', role === 'client' ? 'Failed to add comment' : 'Failed to add note');
         } finally {
             setSubmitting(false);
         }
@@ -127,7 +127,7 @@ const JobNotesScreen = () => {
                     </TouchableOpacity>
 
                     <Text style={{ color: theme.text, fontSize: 20, fontWeight: 'bold', marginLeft: 16 }}>
-                        Job Notes
+                        {role === 'client' ? 'Job Comments' : 'Job Notes'}
                     </Text>
                 </View>
 
@@ -145,7 +145,9 @@ const JobNotesScreen = () => {
                             contentContainerStyle={{ paddingBottom: 12 }}
                             ListEmptyComponent={
                                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 50 }}>
-                                    <Text style={{ color: theme.textTertiary, fontSize: 16 }}>No Job Notes Yet</Text>
+                                    <Text style={{ color: theme.textTertiary, fontSize: 16 }}>
+                                        {role === 'client' ? 'No Job Comments Yet' : 'No Job Notes Yet'}
+                                    </Text>
                                 </View>
                             }
                         />
@@ -182,7 +184,7 @@ const JobNotesScreen = () => {
                                 borderColor: theme.border,
                                 maxHeight: 120,
                             }}
-                            placeholder="Add a note..."
+                            placeholder={role === 'client' ? 'Add a comment...' : 'Add a note...'}
                             placeholderTextColor={theme.textTertiary}
                             multiline
                             value={newNote}

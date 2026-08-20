@@ -8,14 +8,14 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/RootNavigator';
 import { useTheme } from '../context/ThemeContext';
 import Toast from 'react-native-toast-message';
-import { getReviewQuestions, submitReview } from '../api/jobs.service';
+import { getReviewQuestions, submitReview, getReviewAnswers } from '../api/jobs.service';
 
 const EMOJIS = [
-    { name: 'sad-outline', color: '#EF4444', value: 1 },
-    { name: 'sad', color: '#F97316', value: 2 },
-    { name: 'happy-outline', color: '#EAB308', value: 3 },
-    { name: 'happy', color: '#84CC16', value: 4 },
-    { name: 'heart-outline', color: '#22C55E', value: 5 },
+    { name: 'sad-outline', color: '#EF4444', value: 1, label: 'Very Bad' },
+    { name: 'sad', color: '#F97316', value: 2, label: 'Bad' },
+    { name: 'happy-outline', color: '#EAB308', value: 3, label: 'Okay' },
+    { name: 'happy', color: '#84CC16', value: 4, label: 'Good' },
+    { name: 'heart-outline', color: '#22C55E', value: 5, label: 'Great' },
 ];
 
 interface Question {
@@ -35,6 +35,7 @@ export default function RatingScreen() {
     const [loading, setLoading] = useState(true);
     const [answers, setAnswers] = useState<{ [key: number]: string | number }>({});
     const [submitting, setSubmitting] = useState(false);
+    const [isSubmitted, setIsSubmitted] = useState(false);
 
     useEffect(() => {
         fetchQuestions();
@@ -43,6 +44,26 @@ export default function RatingScreen() {
     const fetchQuestions = async () => {
         try {
             setLoading(true);
+            const answersResponse = await getReviewAnswers(jobId, carerId, clientId, jobTable);
+            
+            if (answersResponse?.success && answersResponse?.already_submitted) {
+                setIsSubmitted(true);
+                const mappedQuestions = answersResponse.data.map((item: any) => ({
+                    id: item.question_id,
+                    title: item.question_title,
+                    type: item.question_type,
+                    options: item.options
+                }));
+                const mappedAnswers: { [key: number]: string | number } = {};
+                answersResponse.data.forEach((item: any) => {
+                    mappedAnswers[item.question_id] = item.question_type === 'emoji_rating' ? Number(item.answer) : item.answer;
+                });
+                setQuestions(mappedQuestions);
+                setAnswers(mappedAnswers);
+                setLoading(false);
+                return;
+            }
+
             const response = await getReviewQuestions();
             if (response?.success && response?.data) {
                 setQuestions(response.data);
@@ -66,6 +87,7 @@ export default function RatingScreen() {
     };
 
     const handleSelectAnswer = (questionId: number, value: string | number) => {
+        if (isSubmitted) return;
         setAnswers({ ...answers, [questionId]: value });
     };
 
@@ -156,7 +178,14 @@ export default function RatingScreen() {
                     <Ionicons name="arrow-back" size={24} color={theme.text} />
                 </TouchableOpacity>
                 <Text style={[styles.headerTitle, { color: theme.text }]}>Rate Service</Text>
-                <View style={{ width: 24 }} />
+                {isSubmitted ? (
+                    <View style={{ backgroundColor: theme.success + '20', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, flexDirection: 'row', alignItems: 'center' }}>
+                        <Ionicons name="checkmark-circle" size={12} color={theme.success} style={{ marginRight: 4 }} />
+                        <Text style={{ color: theme.success, fontWeight: '700', fontSize: 10, textTransform: 'uppercase' }}>Submitted</Text>
+                    </View>
+                ) : (
+                    <View style={{ width: 24 }} />
+                )}
             </View>
 
             {loading ? (
@@ -206,7 +235,7 @@ export default function RatingScreen() {
                                             return (
                                                 <TouchableOpacity
                                                     key={emoji.value}
-                                                    style={[styles.emojiBtn, isSelected && { transform: [{ scale: 1.2 }] }]}
+                                                    style={[styles.emojiBtn, { alignItems: 'center' }, isSelected && { transform: [{ scale: 1.1 }] }]}
                                                     onPress={() => handleSelectAnswer(q.id, emoji.value)}
                                                     activeOpacity={0.7}
                                                 >
@@ -215,6 +244,9 @@ export default function RatingScreen() {
                                                         size={40}
                                                         color={isSelected ? emoji.color : theme.textTertiary}
                                                     />
+                                                    <Text style={{ color: isSelected ? emoji.color : theme.textTertiary, fontSize: 10, marginTop: 4, fontWeight: isSelected ? 'bold' : 'normal' }}>
+                                                        {emoji.label}
+                                                    </Text>
                                                 </TouchableOpacity>
                                             );
                                         })}
@@ -234,25 +266,27 @@ export default function RatingScreen() {
                                         textAlignVertical="top"
                                         value={(answers[q.id] as string) || ''}
                                         onChangeText={(text) => handleSelectAnswer(q.id, text)}
+                                        editable={!isSubmitted}
                                     />
                                 )}
                             </View>
                         ))}
+                        {!isSubmitted && (
+                            <View style={{ marginTop: 8 }}>
+                                <TouchableOpacity
+                                    style={[styles.submitButton, { backgroundColor: theme.primary }, submitting && { opacity: 0.7 }]}
+                                    onPress={handleSubmit}
+                                    disabled={submitting || questions.length === 0}
+                                >
+                                    {submitting ? (
+                                        <ActivityIndicator color="#fff" />
+                                    ) : (
+                                        <Text style={styles.submitButtonText}>Submit Rating</Text>
+                                    )}
+                                </TouchableOpacity>
+                            </View>
+                        )}
                     </KeyboardAwareScrollView>
-
-                    <View style={[styles.footer, { borderTopColor: theme.border, backgroundColor: theme.surface }]}>
-                        <TouchableOpacity
-                            style={[styles.submitButton, { backgroundColor: theme.primary }, submitting && { opacity: 0.7 }]}
-                            onPress={handleSubmit}
-                            disabled={submitting || questions.length === 0}
-                        >
-                            {submitting ? (
-                                <ActivityIndicator color="#fff" />
-                            ) : (
-                                <Text style={styles.submitButtonText}>Submit Rating</Text>
-                            )}
-                        </TouchableOpacity>
-                    </View>
                 </>
             )}
         </SafeAreaView>
@@ -271,7 +305,7 @@ const styles = StyleSheet.create({
     },
     backBtn: { padding: 4 },
     headerTitle: { fontSize: 18, fontWeight: 'bold' },
-    scrollContent: { padding: 16, paddingBottom: 40 },
+    scrollContent: { padding: 16, paddingBottom: 60 },
     introContainer: { marginBottom: 20 },
     introText: { fontSize: 14, lineHeight: 20, textAlign: 'center' },
     questionCard: {

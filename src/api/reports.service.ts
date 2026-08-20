@@ -17,3 +17,11 @@ export const getTimesheets = async (carerId: string): Promise<any> => {
         return error;
     }
 };
+export const getCarerCuresAlerts = async (carerId: string): Promise<any> => {
+    try {
+        const response = await api.get(`/get_carer_cures_alerts_api.php?carer_id=${carerId}`);
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+};

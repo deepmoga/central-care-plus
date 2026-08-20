@@ -6,7 +6,7 @@ import { useTheme } from '../context/ThemeContext';
 import { Ionicons, FontAwesome5, Feather } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { getServiceReport, getTimesheets } from '../api/reports.service';
+import { getServiceReport, getTimesheets, getCarerCuresAlerts } from '../api/reports.service';
 import WeekCalendar from '../components/WeekCalendar';
 import { useAuthStore } from '../store/authStore';
 
@@ -55,9 +55,11 @@ const ReportsScreen = () => {
     });
     const [serviceStatus, setServiceStatus] = useState<any[]>([]);
 
-    const [activeTab, setActiveTab] = useState<'Reports' | 'Timesheet'>('Reports');
+    const [activeTab, setActiveTab] = useState<'Reports' | 'Timesheet' | 'Look & Listen'>('Reports');
     const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
     const [loadingTimesheets, setLoadingTimesheets] = useState(false);
+    const [lookListenData, setLookListenData] = useState<any[]>([]);
+    const [loadingLookListen, setLoadingLookListen] = useState(false);
 
     /**
      * ---------- WEEK START = MONDAY ----------
@@ -156,11 +158,31 @@ const ReportsScreen = () => {
         setRefreshing(true);
         if (activeTab === 'Reports') {
             await fetchReports();
-        } else {
+        } else if (activeTab === 'Timesheet') {
             await fetchTimesheetsData();
+        } else {
+            await fetchLookListenData();
         }
         setRefreshing(false);
     }, [activeTab, currentWeekStart, selectedDate]);
+
+    const fetchLookListenData = async () => {
+        if (!user?.id) return;
+        setLoadingLookListen(true);
+        try {
+            const res = await getCarerCuresAlerts(user.id.toString());
+            if (res && res.success && res.data) {
+                setLookListenData(res.data);
+            } else {
+                setLookListenData([]);
+            }
+        } catch (error) {
+            console.error('Error fetching look and listen data:', error);
+            setLookListenData([]);
+        } finally {
+            setLoadingLookListen(false);
+        }
+    };
 
     const fetchTimesheetsData = async () => {
         if (!user?.id) return;
@@ -184,6 +206,7 @@ const ReportsScreen = () => {
         useCallback(() => {
             fetchReports();
             fetchTimesheetsData();
+            fetchLookListenData();
         }, [currentWeekStart, selectedDate])
     );
 
@@ -217,7 +240,51 @@ const ReportsScreen = () => {
                     Timesheet
                 </Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+                style={[{ flex: 1, alignItems: 'center', paddingVertical: 15, borderBottomWidth: 2 }, activeTab === 'Look & Listen' ? { borderBottomColor: theme.primary } : { borderBottomColor: 'transparent' }]}
+                onPress={() => setActiveTab('Look & Listen')}
+            >
+                <Text style={[
+                    { fontSize: 16, fontWeight: '600', textAlign: 'center' },
+                    { color: activeTab === 'Look & Listen' ? theme.primary : theme.textTertiary }
+                ]}>
+                    Look & Listen
+                </Text>
+            </TouchableOpacity>
         </View>
+    );
+
+    const renderLookListenItem = ({ item }: { item: any }) => (
+        <TouchableOpacity
+            style={[{ backgroundColor: theme.surface, borderColor: theme.border, flexDirection: 'row', alignItems: 'center', padding: 15, borderRadius: 12, marginBottom: 10, borderWidth: 1, elevation: 2 }]}
+            onPress={() => (navigation as any).navigate('LookListenTool', {
+                serviceId: item.service_id,
+                tableName: item.table_name,
+                clientName: `${item.client_name} ${item.family_name}`,
+                carerId: user?.id,
+                clientId: item.items && item.items.length > 0 ? item.items[0].client_id : null,
+                clientAddress: ''
+            })}
+        >
+            <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: theme.primary + '20', justifyContent: 'center', alignItems: 'center', marginRight: 15 }}>
+                <Ionicons name="eye" size={24} color={theme.primary} />
+            </View>
+
+            <View style={{ flex: 1 }}>
+                <Text style={[{ color: theme.text, fontSize: 16, fontWeight: '500', marginBottom: 4 }]}>
+                    {item.service_name}
+                </Text>
+                <Text style={[{ color: theme.textSecondary, fontSize: 14, marginBottom: 2 }]}>
+                    {item.client_name} {item.family_name}
+                </Text>
+                <Text style={[{ color: theme.textTertiary, fontSize: 12 }]}>
+                    {item.items && item.items.length > 0 ? item.items[0].created_at : ''}
+                </Text>
+            </View>
+
+            <Ionicons name="chevron-forward" size={20} color={theme.textTertiary} />
+        </TouchableOpacity>
     );
 
     const renderTimesheetItem = ({ item }: { item: Timesheet }) => (
@@ -299,25 +366,15 @@ const ReportsScreen = () => {
                                 </View>
                             </View>
 
-                            {/* Total Kilometers */}
+                            {/* Total Outing Kms */}
                             <View style={styles.card}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-                                    <FontAwesome5 name="car" size={20} color={theme.textSecondary} style={{ marginRight: 8 }} />
-                                    <Text style={[styles.cardTitle, { marginBottom: 0, fontSize: 14 }]}>Total Kilometers</Text>
-                                </View>
-                                <View style={[styles.divider, { width: '100%', height: 1, backgroundColor: theme.border, marginBottom: 12 }]} />
-                                <View style={styles.cardRow}>
-                                    <View style={styles.subStatContainer}>
-                                        <Text style={styles.subStatLabel}>Total Private Kms</Text>
-                                        <Text style={styles.cardValue}>{stats.total_private_kms}</Text>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <FontAwesome5 name="car" size={20} color={theme.textSecondary} style={{ marginRight: 8 }} />
+                                        <Text style={[styles.cardTitle, { marginBottom: 0, fontSize: 14 }]}>Total Outing Kms</Text>
                                     </View>
-                                    <View style={styles.divider} />
-                                    <View style={styles.subStatContainer}>
-                                        <Text style={styles.subStatLabel}>Total Outing Kms</Text>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                                            <Text style={styles.cardValue}>{stats.total_outing_kms}</Text>
-                                            <FontAwesome5 name="car-side" size={20} color="#F6E05E" />
-                                        </View>
+                                    <View>
+                                        <Text style={styles.cardValue}>{stats.total_outing_kms}</Text>
                                     </View>
                                 </View>
                             </View>

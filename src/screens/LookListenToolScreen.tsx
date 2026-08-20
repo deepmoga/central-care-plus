@@ -30,6 +30,7 @@ export default function LookListenToolScreen() {
     const [alerts, setAlerts] = useState<any[]>([]);
     const [selectedItems, setSelectedItems] = useState<any[]>([]);
     const [additionalInfo, setAdditionalInfo] = useState('');
+    const [hasSubmittedData, setHasSubmittedData] = useState(false);
 
     useEffect(() => {
         fetchAlerts();
@@ -53,6 +54,7 @@ export default function LookListenToolScreen() {
         }
 
         if (previousDataResponse?.success && previousDataResponse.data && previousDataResponse.data.length > 0) {
+            setHasSubmittedData(true);
             setSelectedItems(previousDataResponse.data.map((item: any) => ({
                 id: item.id,
                 title: item.title,
@@ -186,23 +188,23 @@ export default function LookListenToolScreen() {
                             editable={!isExpired}
                         />
                     </View>
-                </KeyboardAwareScrollView>
-            )}
 
-            {!isExpired && (
-                <View style={[styles.footer, { borderTopColor: theme.border, backgroundColor: theme.surface }]}>
-                    <TouchableOpacity
-                        style={[styles.submitButton, { backgroundColor: theme.primary }, submitting && { opacity: 0.7 }]}
-                        onPress={handleSubmit}
-                        disabled={submitting}
-                    >
-                        {submitting ? (
-                            <ActivityIndicator color="#fff" />
-                        ) : (
-                            <Text style={styles.submitButtonText}>Submit</Text>
-                        )}
-                    </TouchableOpacity>
-                </View>
+                    {!isExpired && (
+                        <View style={{ marginTop: 8 }}>
+                            <TouchableOpacity
+                                style={[styles.submitButton, { backgroundColor: theme.primary }, submitting && { opacity: 0.7 }]}
+                                onPress={handleSubmit}
+                                disabled={submitting}
+                            >
+                                {submitting ? (
+                                    <ActivityIndicator color="#fff" />
+                                ) : (
+                                    <Text style={styles.submitButtonText}>Submit</Text>
+                                )}
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                </KeyboardAwareScrollView>
             )}
         </SafeAreaView>
     );
@@ -223,7 +225,7 @@ const styles = StyleSheet.create({
     clientInfoContainer: { padding: 16, paddingBottom: 8 },
     clientName: { fontSize: 16, fontWeight: '600' },
     loaderContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    scrollContent: { padding: 16 },
+    scrollContent: { padding: 16, paddingBottom: 60 },
     itemContainer: {
         flexDirection: 'row',
         alignItems: 'center',

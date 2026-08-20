@@ -7,7 +7,8 @@ import {
     KeyboardAvoidingView,
     Platform,
     TouchableOpacity,
-    Linking
+    Linking,
+    RefreshControl
 } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { ProfileStyles } from '../styles/ProfileStyles';
@@ -45,6 +46,17 @@ const ClientProfileScreen = () => {
     const params = route.params as ClientProfileParams;
 
     const [profileData, setProfileData] = React.useState<ClientProfileData | null>(null);
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    const onRefresh = React.useCallback(async () => {
+        setRefreshing(true);
+        if (role === 'client') {
+            await getCarerProfile(params.clientId);
+        } else {
+            await getClientDetails(params.clientId);
+        }
+        setRefreshing(false);
+    }, [params.clientId, role]);
 
     const getClientDetails = async (id: number) => {
         try {
@@ -152,7 +164,13 @@ const ClientProfileScreen = () => {
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     style={{ flex: 1 }}
                 >
-                    <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+                    <ScrollView 
+                        contentContainerStyle={styles.scrollContent} 
+                        showsVerticalScrollIndicator={false}
+                        refreshControl={
+                            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.primary]} />
+                        }
+                    >
 
                         {/* Header Section */}
                         <View style={styles.header}>
@@ -238,7 +256,7 @@ const ClientProfileScreen = () => {
                                             borderBottomColor: theme.border
                                         }}
                                         onPress={() => {
-                                            const url = `${process.env.EXPO_PUBLIC_BASE_URL}${doc.doc_file}`;
+                                            const url = doc.doc_file;
                                             Linking.openURL(url).catch(err => console.error("Couldn't load page", err));
                                         }}
                                     >

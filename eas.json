@@ -9,13 +9,25 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "https://homecareclaimportal.com.au/api",
+        "EXPO_PUBLIC_BASE_URL": "https://homecareclaimportal.com.au/"
       }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "https://homecareclaimportal.com.au/api",
+        "EXPO_PUBLIC_BASE_URL": "https://homecareclaimportal.com.au/"
+      }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "https://homecareclaimportal.com.au/api",
+        "EXPO_PUBLIC_BASE_URL": "https://homecareclaimportal.com.au/"
+      }
     }
   },
   "submit": {

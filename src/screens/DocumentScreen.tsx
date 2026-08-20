@@ -76,7 +76,7 @@ const DocumentScreen = () => {
     };
 
     const openFile = (file: string) => {
-        const url = `${process.env.EXPO_PUBLIC_BASE_URL}${file}`;
+        const url = file;
         Linking.openURL(url).catch(err => console.error("Couldn't open file", err));
     };
 

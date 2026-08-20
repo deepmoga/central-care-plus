@@ -7,6 +7,7 @@ import Toast from 'react-native-toast-message';
 import * as Location from 'expo-location';
 import { useEffect } from 'react';
 import { getToastConfig } from './src/config/ToastConfig';
+import UpdateModal from './src/components/UpdateModal';
 
 
 const ThemedToast = () => {
@@ -36,6 +37,7 @@ export default function App() {
                 <RootNavigator />
                 <StatusBar style="auto" />
                 <ThemedToast />
+                <UpdateModal />
             </ThemeProvider>
         </SafeAreaProvider>
     );

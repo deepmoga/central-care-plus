@@ -130,6 +130,15 @@ export const getReviewQuestions = async (): Promise<any> => {
     }
 };
 
+export const getReviewAnswers = async (jobId: number, carerId: number, clientId: number, tableName: string): Promise<any> => {
+    try {
+        const response = await api.get(`/get_review_answers_api.php?job_id=${jobId}&carer_id=${carerId}&client_id=${clientId}&table_name=${tableName}`);
+        return response.data;
+    } catch (error: any) {
+        return error;
+    }
+};
+
 export const submitReview = async (payload: any): Promise<any> => {
     try {
         const response = await api.post('/submit_review_api.php', payload);
