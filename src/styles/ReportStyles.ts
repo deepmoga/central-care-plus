@@ -69,6 +69,7 @@ export const createStyles = (theme: ThemeColors) => StyleSheet.create({
     subStatLabel: {
         fontSize: 12,
         color: theme.textSecondary,
+        fontWeight: '500',
         marginBottom: 4,
     },
     subStatValue: {
