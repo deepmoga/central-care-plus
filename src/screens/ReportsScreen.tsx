@@ -427,7 +427,7 @@ const ReportsScreen = () => {
                         </View>
                     )}
                     </ScrollView>
-                ) : (
+                ) : activeTab === 'Timesheet' ? (
                     loadingTimesheets ? (
                         <View style={{ padding: 20 }}>
                             <ActivityIndicator size="large" color={theme.primary} />
@@ -445,6 +445,32 @@ const ReportsScreen = () => {
                         <FlatList<Timesheet>
                             data={timesheets}
                             renderItem={renderTimesheetItem}
+                            keyExtractor={(item, index) => item.id ? item.id.toString() : index.toString()}
+                            contentContainerStyle={{ padding: 20 }}
+                            showsVerticalScrollIndicator={false}
+                            refreshControl={
+                                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.primary]} />
+                            }
+                        />
+                    )
+                ) : (
+                    loadingLookListen ? (
+                        <View style={{ padding: 20 }}>
+                            <ActivityIndicator size="large" color={theme.primary} />
+                        </View>
+                    ) : lookListenData.length === 0 ? (
+                        <ScrollView 
+                            contentContainerStyle={{ flex: 1, justifyContent: 'center', alignItems: 'center', minHeight: 200 }}
+                            refreshControl={
+                                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.primary]} />
+                            }
+                        >
+                            <Text style={{ color: theme.textTertiary, fontSize: 16 }}>No look and listen records found.</Text>
+                        </ScrollView>
+                    ) : (
+                        <FlatList<any>
+                            data={lookListenData}
+                            renderItem={renderLookListenItem}
                             keyExtractor={(item, index) => item.id ? item.id.toString() : index.toString()}
                             contentContainerStyle={{ padding: 20 }}
                             showsVerticalScrollIndicator={false}
