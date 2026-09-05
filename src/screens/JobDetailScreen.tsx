@@ -66,7 +66,7 @@ const JobDetailScreen = () => {
     const comment = jobState?.comment || '';
 
     const [cancelTimer, setCancelTimer] = useState(0); // in seconds
-    const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const timerRef = useRef<any>(null);
 
     const [isCheckOutModalVisible, setIsCheckOutModalVisible] = useState(false);
     const [isTaskModalVisible, setIsTaskModalVisible] = useState(false);
@@ -147,7 +147,7 @@ const JobDetailScreen = () => {
     }, [jobId, jobTable]));
 
     useEffect(() => {
-        let interval: NodeJS.Timeout;
+        let interval: any;
 
         if (isCancelEnabled && jobState?.cancelExpirationTime) {
             const updateTimer = () => {

@@ -6,16 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/appIcon.png",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/appIcon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "notification": {
-      "icon": "./assets/app-notification-icon.png",
-      "color": "#ffffff"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.prince46.CentralCareApp",
@@ -27,19 +17,16 @@
     },
     "android": {
       "versionCode": 4,
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/appIcon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
       "softwareKeyboardLayoutMode": "pan",
-      "navigationBar": {
-        "visible": true,
-        "barStyle": "inset"
-      },
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_FINE_LOCATION"
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.POST_NOTIFICATIONS"
       ],
       "package": "com.centralcare.app"
     },
@@ -53,7 +40,13 @@
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
       ],
-      "expo-notifications",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/app-notification-icon.png",
+          "color": "#18a157"
+        }
+      ],
       "@react-native-community/datetimepicker",
       "expo-font"
     ],

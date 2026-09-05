@@ -1,6 +1,8 @@
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import { Platform, Alert } from 'react-native';
+import Constants from 'expo-constants';
+import { Platform } from 'react-native';
+import { savePushToken } from '../api/user.service';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -12,13 +14,15 @@ Notifications.setNotificationHandler({
     }),
 });
 
-export async function registerForPushNotificationsAsync() {
+export async function registerForPushNotificationsAsync(): Promise<string | null> {
+    let token: string | null = null;
     if (Platform.OS === 'android') {
         await Notifications.setNotificationChannelAsync('default', {
             name: 'default',
             importance: Notifications.AndroidImportance.MAX,
             vibrationPattern: [0, 250, 250, 250],
-            lightColor: '#FF231F7C',
+            lightColor: '#18a157',
+            sound: 'default',
         });
     }
 
@@ -31,13 +35,43 @@ export async function registerForPushNotificationsAsync() {
             finalStatus = status;
         }
         if (finalStatus !== 'granted') {
-            Alert.alert('Permission required', 'Failed to get push token for push notification!');
-            return;
+            console.log('Failed to get push token: permission not granted');
+            return null;
+        }
+
+        try {
+            const projectId =
+                Constants?.expoConfig?.extra?.eas?.projectId ??
+                Constants?.easConfig?.projectId ??
+                '1bcf4e02-9907-4887-bdaa-eb4007640cbd';
+
+            const pushTokenData = await Notifications.getExpoPushTokenAsync({
+                projectId,
+            });
+            token = pushTokenData?.data || null;
+            console.log('Obtained Expo push token:', token);
+        } catch (e) {
+            console.error('Error getting Expo push token:', e);
         }
     } else {
-        Alert.alert('Physical device required', 'Must use physical device for Push Notifications');
-        console.log("Not a physical device");
+        console.log('Physical device required for Push Notifications');
     }
+
+    return token;
+}
+
+export async function syncPushTokenWithBackend(): Promise<string | null> {
+    try {
+        const token = await registerForPushNotificationsAsync();
+        if (token) {
+            await savePushToken(token);
+            console.log('Push token successfully synced to backend:', token);
+            return token;
+        }
+    } catch (err) {
+        console.error('Error syncing push token with backend:', err);
+    }
+    return null;
 }
 
 export async function scheduleCheckoutReminder(jobId: number, serviceDate: string, serviceEndTime: string) {

@@ -16,7 +16,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     // 🔹 Snapshot (always available)
-    const initialScheme: ColorSchemeName = Appearance.getColorScheme();
+    const initialScheme = Appearance.getColorScheme();
 
     // 🔹 Reactive (may be null initially)
     const systemScheme = useColorScheme();

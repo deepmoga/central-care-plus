@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { loginUser, LoginResponse } from '../api/auth.service';
 import { setAuthToken, setSignOutCallback } from '../api/api';
 import Toast from 'react-native-toast-message';
+import { syncPushTokenWithBackend } from '../utils/notification.utils';
 export interface User {
     id: number;
     email: string;
@@ -82,6 +83,10 @@ export const useAuthStore = create<AuthState>()(
                             position: 'top',
                             visibilityTime: 1200,
                         });
+
+                        setTimeout(() => {
+                            syncPushTokenWithBackend();
+                        }, 500);
                     } else {
                         set({ isLoading: false });
                         Toast.show({
@@ -133,6 +138,9 @@ export const useAuthStore = create<AuthState>()(
             onRehydrateStorage: () => (state) => {
                 if (state?.user?.token) {
                     setAuthToken(state.user.token);
+                    setTimeout(() => {
+                        syncPushTokenWithBackend();
+                    }, 1000);
                 }
             }
         }

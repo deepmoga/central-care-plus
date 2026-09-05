@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "996438420528",
+    "project_id": "centralcarer",
+    "storage_bucket": "centralcarer.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:996438420528:android:fdeafc5484eefaf6e1d1f5",
+        "android_client_info": {
+          "package_name": "com.centralcare.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJI_f8-0BmY2fiNX3qGBaw2W6-fmozPnY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

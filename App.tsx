@@ -10,6 +10,9 @@ import { getToastConfig } from './src/config/ToastConfig';
 import UpdateModal from './src/components/UpdateModal';
 
 
+import * as Notifications from 'expo-notifications';
+import { syncPushTokenWithBackend } from './src/utils/notification.utils';
+
 const ThemedToast = () => {
     const { theme } = useTheme();
 
@@ -29,6 +32,24 @@ export default function App() {
                 });
             }
         })();
+
+        // Register and sync push notifications token
+        syncPushTokenWithBackend();
+
+        // Notification listener for foreground notifications
+        const notificationListener = Notifications.addNotificationReceivedListener(notification => {
+            console.log('Push notification received in foreground:', notification);
+        });
+
+        // Notification response listener (when user taps notification)
+        const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
+            console.log('User interacted with notification:', response);
+        });
+
+        return () => {
+            notificationListener.remove();
+            responseListener.remove();
+        };
     }, []);
 
     return (

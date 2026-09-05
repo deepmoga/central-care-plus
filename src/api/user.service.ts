@@ -60,3 +60,16 @@ export const updateClientProfile = async (clientId: number, formData: FormData):
         return error;
     }
 };
+
+export const savePushToken = async (pushToken: string): Promise<any> => {
+    try {
+        const response = await api.post('/save_push_token_api.php', {
+            push_token: pushToken,
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error saving push token to backend:', error);
+        return error;
+    }
+};
+
