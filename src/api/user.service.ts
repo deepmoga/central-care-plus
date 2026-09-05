@@ -63,7 +63,7 @@ export const updateClientProfile = async (clientId: number, formData: FormData):
 
 export const savePushToken = async (pushToken: string): Promise<any> => {
     try {
-        const response = await api.post('/save_push_token_api.php', {
+        const response = await api.post('/save_carer_push_token_api.php', {
             push_token: pushToken,
         });
         return response.data;
