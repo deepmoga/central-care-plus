@@ -12,21 +12,24 @@
       },
       "env": {
         "EXPO_PUBLIC_API_BASE_URL": "https://homecareclaimportal.com.au/api",
-        "EXPO_PUBLIC_BASE_URL": "https://homecareclaimportal.com.au/"
+        "EXPO_PUBLIC_BASE_URL": "https://homecareclaimportal.com.au/",
+        "EXPO_USE_COMMUNITY_AUTOLINKING": "1"
       }
     },
     "preview": {
       "distribution": "internal",
       "env": {
         "EXPO_PUBLIC_API_BASE_URL": "https://homecareclaimportal.com.au/api",
-        "EXPO_PUBLIC_BASE_URL": "https://homecareclaimportal.com.au/"
+        "EXPO_PUBLIC_BASE_URL": "https://homecareclaimportal.com.au/",
+        "EXPO_USE_COMMUNITY_AUTOLINKING": "1"
       }
     },
     "production": {
       "autoIncrement": true,
       "env": {
         "EXPO_PUBLIC_API_BASE_URL": "https://homecareclaimportal.com.au/api",
-        "EXPO_PUBLIC_BASE_URL": "https://homecareclaimportal.com.au/"
+        "EXPO_PUBLIC_BASE_URL": "https://homecareclaimportal.com.au/",
+        "EXPO_USE_COMMUNITY_AUTOLINKING": "1"
       }
     }
   },
