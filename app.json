@@ -12,7 +12,10 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSCameraUsageDescription": "This app uses the camera and gallery to upload photos for service verification,records and profile updation.",
-        "NSLocationWhenInUseUsageDescription": "Your location is used to track job start and end locations for service accountability."
+        "NSLocationWhenInUseUsageDescription": "Your location is used to track job start and end locations for service accountability.",
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
       }
     },
     "android": {
